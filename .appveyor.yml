@@ -1,0 +1,16 @@
+image: Visual Studio 2017
+
+skip_branch_with_pr: true
+
+before_build:
+  - nuget restore
+
+deploy:
+  - provider: NuGet
+    api_key:
+      secure: 
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+    on:
+      branch: master
+      appveyor_repo_tag: true

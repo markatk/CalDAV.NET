@@ -1,5 +1,8 @@
 # CalDAV.NET
 
+[![Build status](https://ci.appveyor.com/api/projects/status/le4dlvu54wvpufqh?svg=true)](https://ci.appveyor.com/project/markatk/caldav-net)
+![Nuget](https://img.shields.io/nuget/dt/CalDAV.NET)
+
 ## Description
 
 Asynchronous CalDAV .NET client library build on .NET Standard.
