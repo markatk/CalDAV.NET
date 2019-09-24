@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  radicale:
+    image: tomsquest/docker-radicale
+    ports:
+      - 5232:5232
+    volumes:
+      - ./config:/config:ro
