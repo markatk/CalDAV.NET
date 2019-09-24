@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalDAV.NET", "CalDAV.NET\Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalDAV.NET.Tests", "CalDAV.NET.Tests\CalDAV.NET.Tests.csproj", "{BC1AAA9A-1EFB-4D29-ADD3-268163C8F96A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalDAV.NET.Example", "CalDAV.NET.Example\CalDAV.NET.Example.csproj", "{2673D695-CA11-483E-A5C1-4D06D0DA5563}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{BC1AAA9A-1EFB-4D29-ADD3-268163C8F96A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC1AAA9A-1EFB-4D29-ADD3-268163C8F96A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC1AAA9A-1EFB-4D29-ADD3-268163C8F96A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2673D695-CA11-483E-A5C1-4D06D0DA5563}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2673D695-CA11-483E-A5C1-4D06D0DA5563}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2673D695-CA11-483E-A5C1-4D06D0DA5563}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2673D695-CA11-483E-A5C1-4D06D0DA5563}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

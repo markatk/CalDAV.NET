@@ -1,7 +1,7 @@
 # CalDAV.NET
 
 [![Build status](https://ci.appveyor.com/api/projects/status/le4dlvu54wvpufqh?svg=true)](https://ci.appveyor.com/project/markatk/caldav-net)
-![Nuget](https://img.shields.io/nuget/dt/CalDAV.NET)
+[![Nuget](https://img.shields.io/nuget/dt/CalDAV.NET)](https://www.nuget.org/packages/CalDAV.NET/)
 
 ## Description
 
