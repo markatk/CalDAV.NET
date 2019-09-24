@@ -2,6 +2,16 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard1.3</TargetFramework>
+        <RootNamespace>CalDAV.NET</RootNamespace>
+        <PackageId>CalDAV.NET</PackageId>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/markatk/CalDAV.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/markatk/CalDAV.NET</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>caldav ical webdav client</PackageTags>
+        <Authors>MarkAtk</Authors>
+        <Title>CalDAV.NET</Title>
+        <Description>CalDAV .NET client library</Description>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,15 +2,30 @@ image: Visual Studio 2017
 
 skip_branch_with_pr: true
 
+init:
+  - ps: $env:buildVersion = "$env:APPVEYOR_BUILD_VERSION"
+  - ps: if ( !$env:APPVEYOR_REPO_TAG ) { $env:buildVersion = "$env:buildVersion-alpha$env:APPVEYOR_BUILD_VERSION" }
+  - ps: Update-AppveyorBuild -Version $env:buildVersion
+
+dotnet_csproj:
+  patch: true
+  file: 'CalDAV.NET\CalDAV.NET.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+
 before_build:
   - nuget restore
+
+artifacts:
+  - path: '*.nupkg'
 
 deploy:
   - provider: NuGet
     api_key:
-      secure: 
+      secure: l779ntBLoBFfEkRn83YwoOs/CA15RoQlt1BXLRB0PczcwhfMZChzaCwgO4qI8OLN
     skip_symbols: true
-    artifact: /.*\.nupkg/
+    artifact: '**\CalDAV.NET.nupkg'
     on:
       branch: master
       appveyor_repo_tag: true
