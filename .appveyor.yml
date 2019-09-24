@@ -18,7 +18,7 @@ before_build:
   - nuget restore
 
 artifacts:
-  - path: '*.nupkg'
+  - path: '**\*.nupkg'
 
 deploy:
   - provider: NuGet
