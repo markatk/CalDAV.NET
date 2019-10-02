@@ -31,10 +31,7 @@ namespace CalDAV.NET
 
         public async Task<ICalendar> GetCalendarAsync(string name)
         {
-            var result = await _client.Propfind($"{Username}/{name}", new PropfindParameters
-            {
-
-            });
+            var result = await _client.Propfind($"{Username}/{name}");
 
             if (result.IsSuccessful == false)
             {
@@ -45,7 +42,7 @@ namespace CalDAV.NET
 
             var resource = result.Resources.FirstOrDefault();
 
-            return Calendar.Deserialize(resource);
+            return Calendar.Deserialize(resource, _client);
         }
     }
 }
