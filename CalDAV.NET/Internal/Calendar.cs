@@ -13,12 +13,16 @@ namespace CalDAV.NET.Internal
         public string Name
         {
             get => _calendar.Name;
-            private set => _calendar.Name = value;
+            internal set => _calendar.Name = value;
         }
+
+        public string DisplayName { get; private set; }
 
         public string Owner { get; private set; }
         public DateTime LastModified { get; private set; }
         public string Color { get; private set; }
+
+        internal string Username { get; set; }
 
         private string ETag { get; set; }
         private string SyncToken { get; set; }
@@ -36,6 +40,7 @@ namespace CalDAV.NET.Internal
         {
             var events = new List<IEvent>();
 
+            var result = await _client.ReportAsync($"{Username}/{Name}");
 
 
             return events;
@@ -54,7 +59,7 @@ namespace CalDAV.NET.Internal
             {
                 if (property.Key.LocalName == "displayname")
                 {
-                    calendar.Name = property.Value;
+                    calendar.DisplayName = property.Value;
                 }
                 else if (property.Key.LocalName == "owner")
                 {

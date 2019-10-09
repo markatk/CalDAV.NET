@@ -7,7 +7,7 @@ namespace CalDAV.NET.Interfaces
     {
         string Username { get; }
         string Password { get; }
-        Uri Url { get; }
+        Uri Uri { get; }
 
         Task<ICalendar> GetCalendarAsync(string name);
     }

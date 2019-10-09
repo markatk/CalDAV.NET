@@ -10,20 +10,22 @@ namespace CalDAV.NET
     {
         public string Username { get; }
         public string Password { get; }
-        public Uri Url { get; }
+        public Uri Uri { get; }
 
         private static readonly CalDAVClient _client = new CalDAVClient();
 
-        public Client(Uri url, string username, string password)
+        public Client(Uri uri, string username, string password)
         {
-            Url = url;
+            Uri = uri;
             Username = username;
             Password = password;
+
+            _client.BaseUri = uri;
         }
 
         public async Task<ICalendar> GetCalendarAsync(string name)
         {
-            var result = await _client.PropfindAsync(new Uri($"{Url}{Username}/{name}"));
+            var result = await _client.PropfindAsync($"{Username}/{name}");
 
             if (result.IsSuccessful == false)
             {
@@ -34,7 +36,11 @@ namespace CalDAV.NET
 
             var resource = result.Resources.FirstOrDefault();
 
-            return Calendar.Deserialize(resource, _client);
+            var calendar = Calendar.Deserialize(resource, _client);
+            calendar.Name = name;
+            calendar.Username = Username;
+
+            return calendar;
         }
     }
 }

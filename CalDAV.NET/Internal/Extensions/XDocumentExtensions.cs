@@ -1,13 +1,15 @@
 using System;
+using System.Net.Http;
+using System.Text;
 using System.Xml.Linq;
 
 namespace CalDAV.NET.Internal.Extensions
 {
     internal static class XDocumentExtensions
     {
-        public static string ToStringWithDeclaration(this XDocument document)
+        public static StringContent ToStringContent(this XDocument document)
         {
-            return document.Declaration + Environment.NewLine + document;
+            return new StringContent(document.ToString(), Encoding.UTF8, "application/xml");
         }
     }
 }
