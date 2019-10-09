@@ -5,7 +5,7 @@
 
 ## Description
 
-Asynchronous CalDAV .NET client library build on .NET Standard.
+Asynchronous CalDAV .NET client library build on .NET Standard. Heavily influenced by [WebDAVClient](https://github.com/skazantsev/WebDavClient) but was not able to use it because of different request methods required by CalDAV.
 
 ## Installation
 

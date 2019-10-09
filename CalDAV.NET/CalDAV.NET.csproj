@@ -16,7 +16,6 @@
 
     <ItemGroup>
       <PackageReference Include="Ical.Net" Version="4.1.11" />
-      <PackageReference Include="WebDav.Client" Version="2.3.1" />
     </ItemGroup>
 
 </Project>

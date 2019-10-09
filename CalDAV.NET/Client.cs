@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using CalDAV.NET.Interfaces;
 using CalDAV.NET.Internal;
-using WebDav;
 
 namespace CalDAV.NET
 {
@@ -14,24 +12,18 @@ namespace CalDAV.NET
         public string Password { get; }
         public Uri Url { get; }
 
-        private readonly IWebDavClient _client;
+        private static readonly CalDAVClient _client = new CalDAVClient();
 
         public Client(Uri url, string username, string password)
         {
             Url = url;
             Username = username;
             Password = password;
-
-            _client = new WebDavClient(new WebDavClientParams
-            {
-                BaseAddress = Url,
-                Credentials = new NetworkCredential(username, password)
-            });
         }
 
         public async Task<ICalendar> GetCalendarAsync(string name)
         {
-            var result = await _client.Propfind($"{Username}/{name}");
+            var result = await _client.PropfindAsync(new Uri($"{Url}{Username}/{name}"));
 
             if (result.IsSuccessful == false)
             {

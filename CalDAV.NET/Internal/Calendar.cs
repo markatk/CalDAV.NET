@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CalDAV.NET.Interfaces;
 using Ical.Net.Serialization;
-using WebDav;
 
 namespace CalDAV.NET.Internal
 {
@@ -25,9 +24,9 @@ namespace CalDAV.NET.Internal
         private string SyncToken { get; set; }
 
         private readonly Ical.Net.Calendar _calendar;
-        private readonly IWebDavClient _client;
+        private readonly CalDAVClient _client;
 
-        private Calendar(IWebDavClient client)
+        private Calendar(CalDAVClient client)
         {
             _client = client;
             _calendar = new Ical.Net.Calendar();
@@ -37,7 +36,7 @@ namespace CalDAV.NET.Internal
         {
             var events = new List<IEvent>();
 
-            var result = await _client.
+
 
             return events;
         }
@@ -47,29 +46,29 @@ namespace CalDAV.NET.Internal
             return _serializer.SerializeToString(_calendar);
         }
 
-        public static Calendar Deserialize(WebDavResource resource, IWebDavClient client)
+        public static Calendar Deserialize(Resource resource, CalDAVClient client)
         {
             var calendar = new Calendar(client);
 
             foreach (var property in resource.Properties)
             {
-                if (property.Name.LocalName == "displayname")
+                if (property.Key.LocalName == "displayname")
                 {
                     calendar.Name = property.Value;
                 }
-                else if (property.Name.LocalName == "owner")
+                else if (property.Key.LocalName == "owner")
                 {
                     calendar.Owner = property.Value;
                 }
-                else if (property.Name.LocalName == "getetag")
+                else if (property.Key.LocalName == "getetag")
                 {
                     calendar.ETag = property.Value;
                 }
-                else if (property.Name.LocalName == "getlastmodified")
+                else if (property.Key.LocalName == "getlastmodified")
                 {
                     calendar.LastModified = DateTime.Parse(property.Value);
                 }
-                else if (property.Name.LocalName == "sync-token")
+                else if (property.Key.LocalName == "sync-token")
                 {
                     calendar.SyncToken = property.Value;
                 }
