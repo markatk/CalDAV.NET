@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using CalDAV.NET.Interfaces;
 using CalDAV.NET.Internal;
 
@@ -25,7 +26,14 @@ namespace CalDAV.NET
 
         public async Task<ICalendar> GetCalendarAsync(string name)
         {
-            var result = await _client.PropfindAsync($"{Username}/{name}");
+            // create body
+            var propfind = new XElement(Constants.DavNS + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNS));
+            propfind.Add(new XElement(Constants.DavNS + "allprop"));
+
+            var document = new XDocument(new XDeclaration("1.0", "UTF-8", null));
+            document.Add(propfind);
+
+            var result = await _client.PropfindAsync($"{Username}/{name}", document);
 
             if (result.IsSuccessful == false)
             {

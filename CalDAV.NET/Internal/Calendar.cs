@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using CalDAV.NET.Interfaces;
 using Ical.Net.Serialization;
 
@@ -38,10 +39,38 @@ namespace CalDAV.NET.Internal
 
         public async Task<IEnumerable<IEvent>> GetEventsAsync()
         {
+            // create body
+            var query = new XElement(Constants.CalNS + "calendar-query", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNS), new XAttribute(XNamespace.Xmlns + "c", Constants.CalNS));
+
+            var prop = new XElement(Constants.DavNS + "prop");
+            prop.Add(new XElement(Constants.DavNS + "getetag"));
+            prop.Add(new XElement(Constants.CalNS + "calendar-data"));
+            query.Add(prop);
+
+            var filter = new XElement(Constants.CalNS + "filter");
+            filter.Add(new XElement(Constants.CalNS + "comp-filter", new XAttribute("name", "VCALENDAR")));
+            query.Add(filter);
+
+            var document = new XDocument(new XDeclaration("1.0", "UTF-8", null));
+            document.Add(query);
+
+            var result = await _client.ReportAsync($"{Username}/{Name}", document);
+
+            // parse events
             var events = new List<IEvent>();
 
-            var result = await _client.ReportAsync($"{Username}/{Name}");
+            foreach (var response in result.Resources)
+            {
+                foreach (var keyValue in response.Properties)
+                {
+                    if (keyValue.Key.LocalName != "calendar-data")
+                    {
+                        continue;
+                    }
 
+                    var calendar = Ical.Net.Calendar.Load<Ical.Net.Calendar>(keyValue.Value);
+                }
+            }
 
             return events;
         }
