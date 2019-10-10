@@ -58,27 +58,12 @@ namespace CalDAV.NET.Internal
             var result = await _client.ReportAsync($"{Username}/{Name}", document);
 
             // parse events
-            var events = new List<IEvent>();
-
-            foreach (var response in result.Resources)
-            {
-                foreach (var keyValue in response.Properties)
-                {
-                    if (keyValue.Key.LocalName != "calendar-data")
-                    {
-                        continue;
-                    }
-
-                    var internalCalendars = Ical.Net.Calendar.Load<Ical.Net.Calendar>(keyValue.Value);
-
-                    foreach (var internalCalendar in internalCalendars)
-                    {
-                        events.AddRange(internalCalendar.Events.Select(internalEvent => new Event(internalEvent)));
-                    }
-                }
-            }
-
-            return events;
+            return result.Resources
+                .SelectMany(x => x.Properties)
+                .Where(x => x.Key.LocalName == "calendar-data")
+                .SelectMany(x => Ical.Net.Calendar.Load<Ical.Net.Calendar>(x.Value))
+                .SelectMany(x => x.Events)
+                .Select(internalEvent => new Event(internalEvent));
         }
 
         public string Serialize()
