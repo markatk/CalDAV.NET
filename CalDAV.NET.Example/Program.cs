@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace CalDAV.NET.Example
 {
-    class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var client = new Client(new Uri("http://localhost:5232"), "test", "test");
 
@@ -16,7 +16,7 @@ namespace CalDAV.NET.Example
 
             foreach (var calendarEvent in events)
             {
-                Console.WriteLine($"Event: {calendarEvent.Summary} on {calendarEvent.Start}");
+                Console.WriteLine($" - {calendarEvent.Summary} on {calendarEvent.Start} till {calendarEvent.End}");
             }
         }
     }

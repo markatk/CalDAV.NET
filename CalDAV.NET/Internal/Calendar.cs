@@ -52,10 +52,7 @@ namespace CalDAV.NET.Internal
             filter.Add(new XElement(Constants.CalNS + "comp-filter", new XAttribute("name", "VCALENDAR")));
             query.Add(filter);
 
-            var document = new XDocument(new XDeclaration("1.0", "UTF-8", null));
-            document.Add(query);
-
-            var result = await _client.ReportAsync($"{Username}/{Name}", document);
+            var result = await _client.ReportAsync($"{Username}/{Name}", query);
 
             // parse events
             return result.Resources

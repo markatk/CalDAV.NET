@@ -46,18 +46,31 @@ namespace CalDAV.NET.Internal
             return await Response.ParseAsync(message).ConfigureAwait(false);
         }
 
-        public async Task<ResourceResponse> PropfindAsync(string uri, XDocument content = null)
+        public async Task<ResourceResponse> PropfindAsync(string uri, XElement root = null)
         {
-            var responseMessage = await SendAsync(new HttpMethod("PROPFIND"), uri, null, content?.ToStringContent()).ConfigureAwait(false);
+            var responseMessage = await SendAsync(new HttpMethod("PROPFIND"), uri, null, GetContentFromRoot(root)).ConfigureAwait(false);
 
             return await ResourceResponse.ParseAsync(responseMessage).ConfigureAwait(false);
         }
 
-        public async Task<ResourceResponse> ReportAsync(string uri, XDocument content = null)
+        public async Task<ResourceResponse> ReportAsync(string uri, XElement root = null)
         {
-            var responseMessage = await SendAsync(new HttpMethod("REPORT"), uri, null, content?.ToStringContent()).ConfigureAwait(false);
+            var responseMessage = await SendAsync(new HttpMethod("REPORT"), uri, null, GetContentFromRoot(root)).ConfigureAwait(false);
 
             return await ResourceResponse.ParseAsync(responseMessage).ConfigureAwait(false);
+        }
+
+        private StringContent GetContentFromRoot(XElement root = null)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            var document = new XDocument(new XDeclaration("1.0", "UTF-8", null));
+            document.Add(root);
+
+            return document.ToStringContent();
         }
 
         private async Task<HttpResponseMessage> SendAsync(
