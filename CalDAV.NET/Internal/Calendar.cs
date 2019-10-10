@@ -63,36 +63,55 @@ namespace CalDAV.NET.Internal
                 .Select(internalEvent => new Event(internalEvent));
         }
 
-        public string Serialize()
+        public async Task<IEvent> CreateEventAsync(string summary, DateTime start, DateTime end = default, string location = null)
+        {
+            var internalEvent = _calendar.Create<Ical.Net.CalendarComponents.CalendarEvent>();
+
+            var calendarEvent = new Event(internalEvent)
+            {
+                Start = start,
+                End = end != default ? end : start.AddHours(1),
+                Summary = summary,
+                Location = location
+            };
+
+            var result = await _client.PutAsync($"{Username}/{Name}/{calendarEvent.Uid}.ics", calendarEvent.Serialize());
+
+            return result.IsSuccessful ? calendarEvent : null;
+        }
+
+        internal string Serialize()
         {
             return _serializer.SerializeToString(_calendar);
         }
 
-        public static Calendar Deserialize(Resource resource, CalDAVClient client)
+        internal static Calendar Deserialize(Resource resource, CalDAVClient client)
         {
             var calendar = new Calendar(client);
 
             foreach (var property in resource.Properties)
             {
-                if (property.Key.LocalName == "displayname")
+                switch (property.Key.LocalName)
                 {
-                    calendar.DisplayName = property.Value;
-                }
-                else if (property.Key.LocalName == "owner")
-                {
-                    calendar.Owner = property.Value;
-                }
-                else if (property.Key.LocalName == "getetag")
-                {
-                    calendar.ETag = property.Value;
-                }
-                else if (property.Key.LocalName == "getlastmodified")
-                {
-                    calendar.LastModified = DateTime.Parse(property.Value);
-                }
-                else if (property.Key.LocalName == "sync-token")
-                {
-                    calendar.SyncToken = property.Value;
+                    case "displayname":
+                        calendar.DisplayName = property.Value;
+                        break;
+
+                    case "owner":
+                        calendar.Owner = property.Value;
+                        break;
+
+                    case "getetag":
+                        calendar.ETag = property.Value;
+                        break;
+
+                    case "getlastmodified":
+                        calendar.LastModified = DateTime.Parse(property.Value);
+                        break;
+
+                    case "sync-token":
+                        calendar.SyncToken = property.Value;
+                        break;
                 }
             }
 

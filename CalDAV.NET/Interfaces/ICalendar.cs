@@ -13,5 +13,6 @@ namespace CalDAV.NET.Interfaces
         string Color { get; }
 
         Task<IEnumerable<IEvent>> GetEventsAsync();
+        Task<IEvent> CreateEventAsync(string summary, DateTime start, DateTime end = default(DateTime), string location = null);
     }
 }
