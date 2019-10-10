@@ -11,6 +11,8 @@ namespace CalDAV.NET.Example
         {
             var client = new Client(new Uri("http://localhost:5232"), "test", "test");
 
+            await client.GetCalendarsAsync();
+
             // get calendar
             var calendar = await client.GetCalendarAsync("c5b6a846-7846-9e52-adec-a0bdcbfd57bf");
 

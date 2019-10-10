@@ -1,101 +1,69 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using CalDAV.NET.Internal.Extensions;
 
 namespace CalDAV.NET.Internal
 {
     internal class CalDAVClient
     {
         private static readonly HttpClient _client = new HttpClient();
+        private static readonly HttpMethod _propfindMethod = new HttpMethod("PROPFIND");
+        private static readonly HttpMethod _reportMethod = new HttpMethod("REPORT");
 
         public Uri BaseUri { get; set; }
 
         public CalDAVClient()
         {
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
-            _client.DefaultRequestHeaders.Add("Depth", "1");
             _client.DefaultRequestHeaders.Add("Prefer", "return-minimal");
+            _client.DefaultRequestHeaders.Add("Depth", "1");
         }
 
-        public async Task<ResourceResponse> GetAsync(string uri)
+        public Request<ResourceResponse> Get(string uri)
         {
-            var message = await SendAsync(HttpMethod.Get, uri).ConfigureAwait(false);
-
-            return await ResourceResponse.ParseAsync(message).ConfigureAwait(false);
+            return CreateRequest<ResourceResponse>(uri)
+                .WithMethod(HttpMethod.Get);
         }
 
-        public async Task<Response> PutAsync(string uri, string content)
+        public Request<Response> Put(string uri, string content)
         {
-            var body = new StringContent(content, Encoding.UTF8, "text/calendar");
-
-            var message = await SendAsync(HttpMethod.Put, uri, null, body).ConfigureAwait(false);
-
-            return await Response.ParseAsync(message).ConfigureAwait(false);
+            return CreateRequest<Response>(uri)
+                .WithMethod(HttpMethod.Put)
+                .WithContent(new StringContent(content));
         }
 
-        public async Task<Response> DeleteAsync(string uri)
+        public Request<Response> Delete(string uri)
         {
-            var message = await SendAsync(HttpMethod.Delete, uri).ConfigureAwait(false);
-
-            return await Response.ParseAsync(message).ConfigureAwait(false);
+            return CreateRequest<Response>(uri)
+                .WithMethod(HttpMethod.Delete);
         }
 
-        public async Task<ResourceResponse> PropfindAsync(string uri, XElement root = null)
+        public Request<ResourceResponse> Propfind(string uri, XElement root)
         {
-            var responseMessage = await SendAsync(new HttpMethod("PROPFIND"), uri, null, GetContentFromRoot(root)).ConfigureAwait(false);
-
-            return await ResourceResponse.ParseAsync(responseMessage).ConfigureAwait(false);
+            return CreateRequest<ResourceResponse>(uri)
+                .WithMethod(_propfindMethod)
+                .WithXmlContent(root);
         }
 
-        public async Task<ResourceResponse> ReportAsync(string uri, XElement root = null)
+        public Request<ResourceResponse> Report(string uri, XElement root)
         {
-            var responseMessage = await SendAsync(new HttpMethod("REPORT"), uri, null, GetContentFromRoot(root)).ConfigureAwait(false);
-
-            return await ResourceResponse.ParseAsync(responseMessage).ConfigureAwait(false);
+            return CreateRequest<ResourceResponse>(uri)
+                .WithMethod(_reportMethod)
+                .WithXmlContent(root);
         }
 
-        private StringContent GetContentFromRoot(XElement root = null)
+        internal void SetAuthorization(string username, string password)
         {
-            if (root == null)
-            {
-                return null;
-            }
+            var value = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
 
-            var document = new XDocument(new XDeclaration("1.0", "UTF-8", null));
-            document.Add(root);
-
-            return document.ToStringContent();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", value);
         }
 
-        private async Task<HttpResponseMessage> SendAsync(
-            HttpMethod method,
-            string uri,
-            IReadOnlyDictionary<string, string> headers = null,
-            HttpContent content = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+        private Request<T> CreateRequest<T>(string uri) where T : Response, new()
         {
-            using (var request = new HttpRequestMessage(method, new Uri(BaseUri, uri)))
-            {
-                if (headers != null)
-                {
-                    foreach (var header in headers)
-                    {
-                        request.Headers.Add(header.Key, header.Value);
-                    }
-                }
-
-                request.Content = content;
-
-                var response = await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false);
-
-                return response;
-            }
+            return new Request<T>(new Uri(BaseUri, uri), _client);
         }
     }
 }

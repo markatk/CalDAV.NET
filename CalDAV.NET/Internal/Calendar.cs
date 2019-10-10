@@ -52,7 +52,10 @@ namespace CalDAV.NET.Internal
             filter.Add(new XElement(Constants.CalNS + "comp-filter", new XAttribute("name", "VCALENDAR")));
             query.Add(filter);
 
-            var result = await _client.ReportAsync(GetCalendarUrl(), query);
+            var result = await _client
+                .Report(GetCalendarUrl(), query)
+                .SendAsync()
+                .ConfigureAwait(false);
 
             // parse events
             return result.Resources
@@ -75,14 +78,20 @@ namespace CalDAV.NET.Internal
                 Location = location
             };
 
-            var result = await _client.PutAsync(GetEventUrl(calendarEvent), calendarEvent.Serialize());
+            var result = await _client
+                .Put(GetEventUrl(calendarEvent), calendarEvent.Serialize())
+                .SendAsync()
+                .ConfigureAwait(false);
 
             return result.IsSuccessful ? calendarEvent : null;
         }
 
         public async Task<bool> DeleteEventAsync(IEvent calendarEvent)
         {
-            var result = await _client.DeleteAsync(GetEventUrl(calendarEvent));
+            var result = await _client
+                .Delete(GetEventUrl(calendarEvent))
+                .SendAsync()
+                .ConfigureAwait(false);
 
             return result.IsSuccessful;
         }

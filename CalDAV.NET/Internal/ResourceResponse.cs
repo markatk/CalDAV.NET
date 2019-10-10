@@ -11,33 +11,40 @@ namespace CalDAV.NET.Internal
 {
     internal class ResourceResponse : Response
     {
-        public IReadOnlyCollection<Resource> Resources { get; }
+        public IReadOnlyCollection<Resource> Resources { get; private set; }
+
+        public ResourceResponse()
+        {
+            Resources = new List<Resource>();
+        }
 
         public ResourceResponse(string method, int statusCode, IReadOnlyCollection<Resource> resources) : base(method, statusCode)
         {
             Resources = resources;
         }
 
-        public new static async Task<ResourceResponse> ParseAsync(HttpResponseMessage message)
+        public override async Task ParseAsync(HttpResponseMessage message)
         {
+            await base.ParseAsync(message);
+
             var data = await message.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
             var content = GetEncoding(message.Content, Encoding.UTF8).GetString(data, 0, data.Length);
 
-            var resources = new List<Resource>();
-            if (TryParseDocument(content, out var document) && document?.Root != null)
+            if (TryParseDocument(content, out var document) == false || document.Root == null)
             {
-                resources = document.Root
-                    .LocalNameElements("response")
-                    .Select(ParseResource)
-                    .ToList();
+                return;
             }
 
-            return new ResourceResponse(message.RequestMessage.Method.Method, (int) message.StatusCode, resources);
+            Resources = document.Root
+                .LocalNameElements("response")
+                .Select(ParseResource)
+                .ToList();
         }
 
         private static Resource ParseResource(XElement element)
         {
             var uri = element.LocalNameElement("href")?.Value;
+            var status = element.LocalNameElement("status")?.Value;
 
             var properties = element
                 .LocalNameElements("propstat")
@@ -48,9 +55,15 @@ namespace CalDAV.NET.Internal
                     return statusCode >= 200 && statusCode <= 299;
                 })
                 .SelectMany(x => x.LocalNameElements("prop").Elements())
-                .ToList();
+                .Select(x => new KeyValuePair<XName, string>(x.Name, x.GetInnerXml()))
+                .ToDictionary(x => x.Key, x => x.Value);
 
-            return new Resource(properties.Select(x => new KeyValuePair<XName, string>(x.Name, x.GetInnerXml())).ToDictionary(x => x.Key, x => x.Value));
+            return new Resource
+            {
+                Uri = uri,
+                Status = status,
+                Properties = properties
+            };
         }
 
         private static bool TryParseDocument(string text, out XDocument document)

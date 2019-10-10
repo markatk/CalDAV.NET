@@ -6,8 +6,12 @@ namespace CalDAV.NET.Internal
 {
     internal class Response
     {
-        public int StatusCode { get; }
-        public string Method { get; }
+        public int StatusCode { get; private set; }
+        public string Method { get; private set; }
+
+        public Response()
+        {
+        }
 
         public Response(string method, int statusCode)
         {
@@ -17,9 +21,12 @@ namespace CalDAV.NET.Internal
 
         public virtual bool IsSuccessful => StatusCode >= 200 && StatusCode <= 299;
 
-        public static Task<Response> ParseAsync(HttpResponseMessage message)
+        public virtual Task ParseAsync(HttpResponseMessage message)
         {
-            return Task.FromResult(new Response(message.RequestMessage.Method.Method, (int) message.StatusCode));
+            Method = message.RequestMessage.Method.Method;
+            StatusCode = (int) message.StatusCode;
+
+            return Task.CompletedTask;
         }
 
         public override string ToString()

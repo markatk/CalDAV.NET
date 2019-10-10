@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CalDAV.NET.Interfaces
@@ -9,6 +10,7 @@ namespace CalDAV.NET.Interfaces
         string Password { get; }
         Uri Uri { get; }
 
+        Task<IEnumerable<ICalendar>> GetCalendarsAsync();
         Task<ICalendar> GetCalendarAsync(string name);
     }
 }
