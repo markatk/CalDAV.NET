@@ -57,6 +57,18 @@ namespace CalDAV.NET.Internal
             _calendarEvent = calendarEvent;
         }
 
+        public override string ToString()
+        {
+            var content = Summary;
+
+            if (string.IsNullOrEmpty(Location) == false)
+            {
+                content += $" at {Location}";
+            }
+
+            return $"{content} on {Start} till {End}";
+        }
+
         internal string Serialize()
         {
             // TODO: Use real calendar as base

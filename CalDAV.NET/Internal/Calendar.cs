@@ -52,7 +52,7 @@ namespace CalDAV.NET.Internal
             filter.Add(new XElement(Constants.CalNS + "comp-filter", new XAttribute("name", "VCALENDAR")));
             query.Add(filter);
 
-            var result = await _client.ReportAsync($"{Username}/{Name}", query);
+            var result = await _client.ReportAsync(GetCalendarUrl(), query);
 
             // parse events
             return result.Resources
@@ -75,9 +75,16 @@ namespace CalDAV.NET.Internal
                 Location = location
             };
 
-            var result = await _client.PutAsync($"{Username}/{Name}/{calendarEvent.Uid}.ics", calendarEvent.Serialize());
+            var result = await _client.PutAsync(GetEventUrl(calendarEvent), calendarEvent.Serialize());
 
             return result.IsSuccessful ? calendarEvent : null;
+        }
+
+        public async Task<bool> DeleteEventAsync(IEvent calendarEvent)
+        {
+            var result = await _client.DeleteAsync(GetEventUrl(calendarEvent));
+
+            return result.IsSuccessful;
         }
 
         internal string Serialize()
@@ -116,6 +123,16 @@ namespace CalDAV.NET.Internal
             }
 
             return calendar;
+        }
+
+        private string GetCalendarUrl()
+        {
+            return $"{Username}/{Name}";
+        }
+
+        private string GetEventUrl(IEvent calendarEvent)
+        {
+            return $"{Username}/{Name}/{calendarEvent.Uid}.ics";
         }
     }
 }

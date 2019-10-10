@@ -14,5 +14,6 @@ namespace CalDAV.NET.Interfaces
 
         Task<IEnumerable<IEvent>> GetEventsAsync();
         Task<IEvent> CreateEventAsync(string summary, DateTime start, DateTime end = default(DateTime), string location = null);
+        Task<bool> DeleteEventAsync(IEvent calendarEvent);
     }
 }
