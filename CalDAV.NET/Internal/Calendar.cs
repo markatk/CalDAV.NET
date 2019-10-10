@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CalDAV.NET.Interfaces;
@@ -68,7 +69,12 @@ namespace CalDAV.NET.Internal
                         continue;
                     }
 
-                    var calendar = Ical.Net.Calendar.Load<Ical.Net.Calendar>(keyValue.Value);
+                    var internalCalendars = Ical.Net.Calendar.Load<Ical.Net.Calendar>(keyValue.Value);
+
+                    foreach (var internalCalendar in internalCalendars)
+                    {
+                        events.AddRange(internalCalendar.Events.Select(internalEvent => new Event(internalEvent)));
+                    }
                 }
             }
 
