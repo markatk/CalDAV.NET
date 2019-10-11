@@ -97,8 +97,7 @@ namespace CalDAV.NET
 
             var resource = result.Resources.FirstOrDefault();
 
-            var calendar = Calendar.Deserialize(resource, _client);
-            calendar.Uri = uri;
+            var calendar = await Calendar.Deserialize(resource, uri, _client);
 
             return calendar;
         }

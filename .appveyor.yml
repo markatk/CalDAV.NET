@@ -14,9 +14,9 @@ init:
 dotnet_csproj:
   patch: true
   file: 'CalDAV.NET\CalDAV.NET.csproj'
-  version: $env:buildVersion
-  package_version: $env:buildVersion
-  assembly_version: $env:buildVersion
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
 
 before_build:
   - nuget restore

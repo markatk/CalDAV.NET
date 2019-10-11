@@ -18,48 +18,45 @@ namespace CalDAV.NET.Example
 
             foreach (var cal in calendars)
             {
-                var events = await cal.GetEventsAsync();
-
-                Console.WriteLine($" - {cal.DisplayName}, Events: {events.Count()}");
+                Console.WriteLine($" - {cal.DisplayName}, Events: {cal.Events.Count()}");
             }
 
             // get calendar
             var calendar = await client.GetCalendarAsync("c5b6a846-7846-9e52-adec-a0bdcbfd57bf");
 
-            await PrintEventsAsync(calendar);
+            PrintEvents(calendar);
 
             // create
             Console.WriteLine($"Create new event in {calendar.DisplayName}");
 
-            var newEvent = await calendar.CreateEventAsync("Test event", DateTime.Now);
+            var newEvent = calendar.CreateEvent("Test event", DateTime.Now);
 
-            await PrintEventsAsync(calendar);
+            PrintEvents(calendar);
 
             // update
             newEvent.Start = DateTime.Now.AddDays(2);
             newEvent.End = newEvent.Start.AddDays(1);
 
-            await calendar.UpdateEventAsync(newEvent);
-
-            await PrintEventsAsync(calendar);
+            PrintEvents(calendar);
 
             // delete
-            var firstEvent = (await calendar.GetEventsAsync()).FirstOrDefault();
+            var firstEvent = calendar.Events.FirstOrDefault();
 
             Console.WriteLine($"Delete first event {firstEvent}");
 
-            await calendar.DeleteEventAsync(firstEvent);
+            calendar.DeleteEvent(firstEvent);
 
-            await PrintEventsAsync(calendar);
+            PrintEvents(calendar);
+
+            // save changes to remote
+            await calendar.SaveChangesAsync();
         }
 
-        private static async Task PrintEventsAsync(ICalendar calendar)
+        private static void PrintEvents(ICalendar calendar)
         {
             Console.WriteLine($"Events in {calendar.DisplayName}:");
 
-            var events = await calendar.GetEventsAsync();
-
-            foreach (var calendarEvent in events)
+            foreach (var calendarEvent in calendar.Events)
             {
                 Console.WriteLine($" - {calendarEvent.Summary} on {calendarEvent.Start} till {calendarEvent.End}");
             }

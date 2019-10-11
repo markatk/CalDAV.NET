@@ -1,5 +1,6 @@
 using System;
 using CalDAV.NET.Interfaces;
+using CalDAV.NET.Internal.Enums;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
@@ -10,6 +11,7 @@ namespace CalDAV.NET.Internal
     {
         private static readonly CalendarSerializer _calendarSerializer = new CalendarSerializer();
 
+        public EventStatus Status { get; set; }
         public string Uid => _calendarEvent.Uid;
         public DateTime Created => _calendarEvent.Created.Value;
         public DateTime LastModified => _calendarEvent.LastModified.Value;
@@ -29,7 +31,12 @@ namespace CalDAV.NET.Internal
         public TimeSpan Duration
         {
             get => _calendarEvent.Duration;
-            set => _calendarEvent.Duration = value;
+            set
+            {
+                _calendarEvent.Duration = value;
+
+                Changed();
+            }
         }
 
         public DateTime Stamp
@@ -41,13 +48,23 @@ namespace CalDAV.NET.Internal
         public string Location
         {
             get => _calendarEvent.Location;
-            set => _calendarEvent.Location = value;
+            set
+            {
+                _calendarEvent.Location = value;
+
+                Changed();
+            }
         }
 
         public string Summary
         {
             get => _calendarEvent.Summary;
-            set => _calendarEvent.Summary = value;
+            set
+            {
+                _calendarEvent.Summary = value;
+
+                Changed();
+            }
         }
 
         private readonly CalendarEvent _calendarEvent;
@@ -55,6 +72,7 @@ namespace CalDAV.NET.Internal
         public Event(CalendarEvent calendarEvent)
         {
             _calendarEvent = calendarEvent;
+            Status = EventStatus.None;
         }
 
         public override string ToString()
@@ -78,8 +96,26 @@ namespace CalDAV.NET.Internal
             return _calendarSerializer.SerializeToString(calendar);
         }
 
+        private void Changed()
+        {
+            // Do not care about changes if flagged for deletion
+            if (Status == EventStatus.Deleted)
+            {
+                return;
+            }
+
+            Status = EventStatus.Changed;
+        }
+
         private IDateTime SetDateTime(IDateTime target, DateTime value)
         {
+            if (target?.Value == value)
+            {
+                return target;
+            }
+
+            Changed();
+
             if (target == null)
             {
                 return new CalDateTime(value);
