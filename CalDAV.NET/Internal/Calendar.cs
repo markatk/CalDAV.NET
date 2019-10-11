@@ -80,6 +80,22 @@ namespace CalDAV.NET.Internal
             return result.IsSuccessful ? calendarEvent : null;
         }
 
+        public async Task<bool> UpdateEventAsync(IEvent calendarEvent)
+        {
+            var internalEvent = calendarEvent as Event;
+            if (internalEvent == null)
+            {
+                return false;
+            }
+
+            var result = await _client
+                .Put(GetEventUrl(calendarEvent), internalEvent.Serialize())
+                .SendAsync()
+                .ConfigureAwait(false);
+
+            return result.IsSuccessful;
+        }
+
         public async Task<bool> DeleteEventAsync(IEvent calendarEvent)
         {
             var result = await _client

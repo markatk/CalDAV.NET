@@ -18,7 +18,9 @@ namespace CalDAV.NET.Example
 
             foreach (var cal in calendars)
             {
-                Console.WriteLine($" - {cal.DisplayName}");
+                var events = await cal.GetEventsAsync();
+
+                Console.WriteLine($" - {cal.DisplayName}, Events: {events.Count()}");
             }
 
             // get calendar
@@ -29,7 +31,15 @@ namespace CalDAV.NET.Example
             // create
             Console.WriteLine($"Create new event in {calendar.DisplayName}");
 
-            await calendar.CreateEventAsync("Test event", DateTime.Now);
+            var newEvent = await calendar.CreateEventAsync("Test event", DateTime.Now);
+
+            await PrintEventsAsync(calendar);
+
+            // update
+            newEvent.Start = DateTime.Now.AddDays(2);
+            newEvent.End = newEvent.Start.AddDays(1);
+
+            await calendar.UpdateEventAsync(newEvent);
 
             await PrintEventsAsync(calendar);
 
