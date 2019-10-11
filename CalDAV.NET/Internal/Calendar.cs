@@ -12,19 +12,13 @@ namespace CalDAV.NET.Internal
     {
         private static readonly CalendarSerializer _serializer = new CalendarSerializer();
 
-        public string Name
-        {
-            get => _calendar.Name;
-            internal set => _calendar.Name = value;
-        }
+        public string Uri { get; set; }
 
         public string DisplayName { get; private set; }
 
         public string Owner { get; private set; }
         public DateTime LastModified { get; private set; }
         public string Color { get; private set; }
-
-        internal string Username { get; set; }
 
         private string ETag { get; set; }
         private string SyncToken { get; set; }
@@ -41,19 +35,19 @@ namespace CalDAV.NET.Internal
         public async Task<IEnumerable<IEvent>> GetEventsAsync()
         {
             // create body
-            var query = new XElement(Constants.CalNS + "calendar-query", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNS), new XAttribute(XNamespace.Xmlns + "c", Constants.CalNS));
+            var query = new XElement(Constants.CalNs + "calendar-query", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs), new XAttribute(XNamespace.Xmlns + "c", Constants.CalNs));
 
-            var prop = new XElement(Constants.DavNS + "prop");
-            prop.Add(new XElement(Constants.DavNS + "getetag"));
-            prop.Add(new XElement(Constants.CalNS + "calendar-data"));
+            var prop = new XElement(Constants.DavNs + "prop");
+            prop.Add(new XElement(Constants.DavNs + "getetag"));
+            prop.Add(new XElement(Constants.CalNs + "calendar-data"));
             query.Add(prop);
 
-            var filter = new XElement(Constants.CalNS + "filter");
-            filter.Add(new XElement(Constants.CalNS + "comp-filter", new XAttribute("name", "VCALENDAR")));
+            var filter = new XElement(Constants.CalNs + "filter");
+            filter.Add(new XElement(Constants.CalNs + "comp-filter", new XAttribute("name", "VCALENDAR")));
             query.Add(filter);
 
             var result = await _client
-                .Report(GetCalendarUrl(), query)
+                .Report(Uri, query)
                 .SendAsync()
                 .ConfigureAwait(false);
 
@@ -134,14 +128,9 @@ namespace CalDAV.NET.Internal
             return calendar;
         }
 
-        private string GetCalendarUrl()
-        {
-            return $"{Username}/{Name}";
-        }
-
         private string GetEventUrl(IEvent calendarEvent)
         {
-            return $"{Username}/{Name}/{calendarEvent.Uid}.ics";
+            return $"{Uri}/{calendarEvent.Uid}.ics";
         }
     }
 }

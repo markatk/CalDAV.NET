@@ -6,7 +6,6 @@ namespace CalDAV.NET.Interfaces
 {
     public interface ICalendar
     {
-        string Name { get; }
         string DisplayName { get; }
         string Owner { get; }
         DateTime LastModified { get; }

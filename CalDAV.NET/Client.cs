@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CalDAV.NET.Interfaces;
@@ -10,6 +11,8 @@ namespace CalDAV.NET
 {
     public class Client : IClient
     {
+        private readonly Regex _tagRegex = new Regex("<[^>]*(>|$)");
+
         public string Username { get; }
         public string Password { get; }
         public Uri Uri { get; }
@@ -29,18 +32,61 @@ namespace CalDAV.NET
         public async Task<IEnumerable<ICalendar>> GetCalendarsAsync()
         {
             var userUri = await GetUserUri();
+            if (string.IsNullOrEmpty(userUri))
+            {
+                return null;
+            }
 
-            return null;
-        }
-
-        public async Task<ICalendar> GetCalendarAsync(string name)
-        {
             // create body
-            var propfind = new XElement(Constants.DavNS + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNS));
-            propfind.Add(new XElement(Constants.DavNS + "allprop"));
+            var prop = new XElement(Constants.DavNs + "prop");
+            prop.Add(new XElement(Constants.DavNs + "resourcetype"));
+            prop.Add(new XElement(Constants.DavNs + "displayname"));
+            prop.Add(new XElement(Constants.ServerNs + "getctag"));
+            prop.Add(new XElement(Constants.CalNs + "supported-calendar-component-set"));
+
+            var root = new XElement(
+                Constants.DavNs + "propfind",
+                new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs),
+                new XAttribute(XNamespace.Xmlns + "c", Constants.CalNs),
+                new XAttribute(XNamespace.Xmlns + "cs", Constants.ServerNs));
+            root.Add(prop);
 
             var result = await _client
-                .Propfind($"{Username}/{name}", propfind)
+                .Propfind(userUri, root)
+                .SendAsync()
+                .ConfigureAwait(false);
+
+            if (result.IsSuccessful == false)
+            {
+                return null;
+            }
+
+            // get all calendars by returned urls
+            var calendars = new List<ICalendar>();
+
+            foreach (var resource in result.Resources)
+            {
+                var calendar = await GetCalendarWithUriAsync(resource.Uri);
+
+                calendars.Add(calendar);
+            }
+
+            return calendars;
+        }
+
+        public Task<ICalendar> GetCalendarAsync(string name)
+        {
+            return GetCalendarWithUriAsync($"{Username}/{name}");
+        }
+
+        private async Task<ICalendar> GetCalendarWithUriAsync(string uri)
+        {
+            // create body
+            var propfind = new XElement(Constants.DavNs + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs));
+            propfind.Add(new XElement(Constants.DavNs + "allprop"));
+
+            var result = await _client
+                .Propfind(uri, propfind)
                 .SendAsync()
                 .ConfigureAwait(false);
 
@@ -52,8 +98,7 @@ namespace CalDAV.NET
             var resource = result.Resources.FirstOrDefault();
 
             var calendar = Calendar.Deserialize(resource, _client);
-            calendar.Name = name;
-            calendar.Username = Username;
+            calendar.Uri = uri;
 
             return calendar;
         }
@@ -61,10 +106,10 @@ namespace CalDAV.NET
         private async Task<string> GetUserUri()
         {
             // create body
-            var prop = new XElement(Constants.DavNS + "prop");
-            prop.Add(new XElement(Constants.DavNS + "current-user-principal"));
+            var prop = new XElement(Constants.DavNs + "prop");
+            prop.Add(new XElement(Constants.DavNs + "current-user-principal"));
 
-            var root = new XElement(Constants.DavNS + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNS));
+            var root = new XElement(Constants.DavNs + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs));
             root.Add(prop);
 
             var result = await _client
@@ -76,6 +121,20 @@ namespace CalDAV.NET
             if (result.IsSuccessful == false)
             {
                 return null;
+            }
+
+            var resource = result.Resources.FirstOrDefault();
+            if (resource == null)
+            {
+                return null;
+            }
+
+            foreach (var keyValue in resource.Properties)
+            {
+                if (keyValue.Key.LocalName == "current-user-principal")
+                {
+                    return _tagRegex.Replace(keyValue.Value, "");
+                }
             }
 
             return null;
