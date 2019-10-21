@@ -9,6 +9,9 @@ namespace CalDAV.NET.Interfaces
         string DisplayName { get; }
         string Owner { get; }
         DateTime LastModified { get; }
+        string ProductId { get; }
+        string Scale { get; }
+        string Method { get; }
         string Color { get; }
         IReadOnlyCollection<IEvent> Events { get; }
 

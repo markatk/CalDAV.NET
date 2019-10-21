@@ -19,6 +19,9 @@ namespace CalDAV.NET.Internal
 
         public string Owner { get; private set; }
         public DateTime LastModified { get; private set; }
+        public string ProductId { get; private set; }
+        public string Scale { get; private set; }
+        public string Method { get; private set; }
         public string Color { get; private set; }
 
         public IReadOnlyCollection<IEvent> Events => _events.Where(x => x.Status != EventStatus.Deleted).Select(x => x as IEvent).ToList();
