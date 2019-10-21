@@ -10,4 +10,8 @@
       <ProjectReference Include="..\CalDAV.NET\CalDAV.NET.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="CommandLineParser" Version="2.6.0" />
+    </ItemGroup>
+
 </Project>

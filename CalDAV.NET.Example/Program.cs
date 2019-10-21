@@ -1,65 +1,72 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using CalDAV.NET.Interfaces;
+using CalDAV.NET.Example.Options;
+using CommandLine;
 
 namespace CalDAV.NET.Example
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static int Main(string[] args)
         {
-            var client = new Client(new Uri("http://localhost:5232"), "test", "test");
-
-            // get all calendars
-            Console.WriteLine("Calendars:");
-
-            var calendars = await client.GetCalendarsAsync();
-
-            foreach (var cal in calendars)
-            {
-                Console.WriteLine($" - {cal.DisplayName}, Events: {cal.Events.Count()}");
-            }
-
-            // get calendar
-            var calendar = await client.GetCalendarAsync("c5b6a846-7846-9e52-adec-a0bdcbfd57bf");
-
-            PrintEvents(calendar);
-
-            // create
-            Console.WriteLine($"Create new event in {calendar.DisplayName}");
-
-            var newEvent = calendar.CreateEvent("Test event", DateTime.Now);
-
-            PrintEvents(calendar);
-
-            // update
-            newEvent.Start = DateTime.Now.AddDays(2);
-            newEvent.End = newEvent.Start.AddDays(1);
-
-            PrintEvents(calendar);
-
-            // delete
-            var firstEvent = calendar.Events.FirstOrDefault();
-
-            Console.WriteLine($"Delete first event {firstEvent}");
-
-            calendar.DeleteEvent(firstEvent);
-
-            PrintEvents(calendar);
-
-            // save changes to remote
-            await calendar.SaveChangesAsync();
+            return Parser.Default
+                .ParseArguments<FetchOptions, AddOptions>(args)
+                .MapResult(
+                    (FetchOptions x) => RunFetch(x),
+                    (AddOptions x) => RunAdd(x),
+                    errs => 1);
         }
 
-        private static void PrintEvents(ICalendar calendar)
+        private static int RunFetch(FetchOptions options)
         {
-            Console.WriteLine($"Events in {calendar.DisplayName}:");
+            var calendar = options.GetCalendar();
+            if (calendar == null)
+            {
+                Console.WriteLine($"Calendar {options.Calendar} not found");
+
+                return 1;
+            }
+
+            // list all events
+            Console.WriteLine($"{calendar.DisplayName} ({calendar.Events.Count}):");
 
             foreach (var calendarEvent in calendar.Events)
             {
-                Console.WriteLine($" - {calendarEvent.Summary} on {calendarEvent.Start} till {calendarEvent.End}");
+                Console.WriteLine($"- {calendarEvent.Summary} at {calendarEvent.Start}");
             }
+
+            return 0;
+        }
+
+        private static int RunAdd(AddOptions options)
+        {
+            var calendar = options.GetCalendar();
+            if (calendar == null)
+            {
+                Console.WriteLine($"Calendar {options.Calendar} not found");
+
+                return 1;
+            }
+
+            // add event
+            var calendarEvent = calendar.CreateEvent(options.Summary, options.Start);
+            if (calendarEvent == null)
+            {
+                Console.WriteLine("Unable to create event");
+
+                return 1;
+            }
+
+            var result = calendar.SaveChangesAsync().Result;
+            if (result == false)
+            {
+                Console.WriteLine("Unable to save new event");
+
+                return 1;
+            }
+
+            Console.WriteLine("Event created");
+
+            return 0;
         }
     }
 }
