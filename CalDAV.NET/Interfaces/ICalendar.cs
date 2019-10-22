@@ -17,6 +17,11 @@ namespace CalDAV.NET.Interfaces
         string DisplayName { get; }
 
         /// <summary>
+        /// Get the description of the calendar.
+        /// </summary>
+        string Description { get; }
+
+        /// <summary>
         /// Get the owner of the calendar.
         /// </summary>
         string Owner { get; }

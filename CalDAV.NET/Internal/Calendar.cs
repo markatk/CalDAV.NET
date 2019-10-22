@@ -17,7 +17,7 @@ namespace CalDAV.NET.Internal
 
         public string Uid { get; private set; }
         public string DisplayName { get; private set; }
-
+        public string Description { get; private set; }
         public string Owner { get; private set; }
         public DateTime LastModified { get; private set; }
         public string ProductId { get; private set; }
@@ -158,6 +158,16 @@ namespace CalDAV.NET.Internal
 
                     case "sync-token":
                         calendar.SyncToken = property.Value;
+
+                        break;
+
+                    case "calendar-color":
+                        calendar.Color = property.Value;
+
+                        break;
+
+                    case "calendar-description":
+                        calendar.Description = property.Value;
 
                         break;
                 }
