@@ -66,7 +66,7 @@ namespace CalDAV.NET.Example.Options
 
             foreach (var calendar in calendars)
             {
-                Console.WriteLine($"- {calendar.DisplayName}");
+                Console.WriteLine($"- {calendar.DisplayName} ({calendar.Uid})");
             }
 
             return 0;

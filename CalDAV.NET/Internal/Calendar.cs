@@ -15,6 +15,7 @@ namespace CalDAV.NET.Internal
 
         public string Uri { get; set; }
 
+        public string Uid { get; private set; }
         public string DisplayName { get; private set; }
 
         public string Owner { get; private set; }
@@ -124,11 +125,6 @@ namespace CalDAV.NET.Internal
             return result;
         }
 
-        internal string Serialize()
-        {
-            return _serializer.SerializeToString(_calendar);
-        }
-
         internal static async Task<Calendar> Deserialize(Resource resource, string uri, CalDAVClient client)
         {
             var calendar = new Calendar(client)
@@ -142,22 +138,27 @@ namespace CalDAV.NET.Internal
                 {
                     case "displayname":
                         calendar.DisplayName = property.Value;
+
                         break;
 
                     case "owner":
                         calendar.Owner = property.Value;
+
                         break;
 
                     case "getetag":
                         calendar.ETag = property.Value;
+
                         break;
 
                     case "getlastmodified":
                         calendar.LastModified = DateTime.Parse(property.Value);
+
                         break;
 
                     case "sync-token":
                         calendar.SyncToken = property.Value;
+
                         break;
                 }
             }

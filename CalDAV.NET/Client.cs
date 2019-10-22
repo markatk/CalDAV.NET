@@ -67,6 +67,10 @@ namespace CalDAV.NET
             foreach (var resource in result.Resources)
             {
                 var calendar = await GetCalendarWithUriAsync(resource.Uri);
+                if (calendar == null)
+                {
+                    continue;
+                }
 
                 calendars.Add(calendar);
             }
@@ -143,6 +147,13 @@ namespace CalDAV.NET
             }
 
             var resource = result.Resources.FirstOrDefault();
+
+            // check if resource really is a calendar
+            var contentType = resource?.Properties.FirstOrDefault(x => x.Key.LocalName == "getcontenttype");
+            if (contentType.HasValue == false || contentType.Value.Value != "text/calendar")
+            {
+                return null;
+            }
 
             var calendar = await Calendar.Deserialize(resource, uri, _client);
 

@@ -7,6 +7,11 @@ namespace CalDAV.NET.Interfaces
     public interface ICalendar
     {
         /// <summary>
+        /// Get the uid of the calendar.
+        /// </summary>
+        string Uid { get; }
+
+        /// <summary>
         /// Get the display name of the calendar.
         /// </summary>
         string DisplayName { get; }
