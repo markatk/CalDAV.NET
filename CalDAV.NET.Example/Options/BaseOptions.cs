@@ -1,10 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using CalDAV.NET.Interfaces;
 using CommandLine;
 
 namespace CalDAV.NET.Example.Options
 {
-    public class BaseOptions
+    public abstract class BaseOptions
     {
         [Option('h', "host", Required = true, HelpText = "Host to connect to")]
         public string Host { get; set; }
@@ -15,7 +16,9 @@ namespace CalDAV.NET.Example.Options
         [Option('p', "password", HelpText = "Password to authenticate with")]
         public string Password { get; set; }
 
-        public IClient GetClient()
+        public abstract Task<int> Run();
+
+        protected IClient GetClient()
         {
             return new Client(new Uri(Host), Username, Password);
         }

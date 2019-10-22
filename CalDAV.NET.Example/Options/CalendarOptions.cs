@@ -4,12 +4,12 @@ using CommandLine;
 
 namespace CalDAV.NET.Example.Options
 {
-    public class CalendarOptions : BaseOptions
+    public abstract class CalendarOptions : BaseOptions
     {
         [Option('c', "calendar", Required = true, HelpText = "Calendar to work with")]
         public string Calendar { get; set; }
 
-        public Task<ICalendar> GetCalendarAsync()
+        protected Task<ICalendar> GetCalendarAsync()
         {
             return GetClient().GetCalendarAsync(Calendar);
         }
