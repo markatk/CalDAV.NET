@@ -12,5 +12,6 @@ namespace CalDAV.NET.Interfaces
 
         Task<IEnumerable<ICalendar>> GetCalendarsAsync();
         Task<ICalendar> GetCalendarAsync(string name);
+        Task<ICalendar> GetDefaultCalendarAsync();
     }
 }

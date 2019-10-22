@@ -79,6 +79,48 @@ namespace CalDAV.NET
             return GetCalendarWithUriAsync($"{Username}/{name}");
         }
 
+        public async Task<ICalendar> GetDefaultCalendarAsync()
+        {
+            var userUri = await GetUserUri();
+            if (string.IsNullOrEmpty(userUri))
+            {
+                return null;
+            }
+
+            // create body
+            var prop = new XElement(Constants.DavNs + "prop");
+            prop.Add(new XElement(Constants.DavNs + "resourcetype"));
+            prop.Add(new XElement(Constants.DavNs + "displayname"));
+            prop.Add(new XElement(Constants.ServerNs + "getctag"));
+            prop.Add(new XElement(Constants.CalNs + "supported-calendar-component-set"));
+
+            var root = new XElement(
+                Constants.DavNs + "propfind",
+                new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs),
+                new XAttribute(XNamespace.Xmlns + "c", Constants.CalNs),
+                new XAttribute(XNamespace.Xmlns + "cs", Constants.ServerNs));
+            root.Add(prop);
+
+            var result = await _client
+                .Propfind(userUri, root)
+                .WithHeader("Depth", "0")
+                .SendAsync()
+                .ConfigureAwait(false);
+
+            if (result.IsSuccessful == false)
+            {
+                return null;
+            }
+
+            var resource = result.Resources.FirstOrDefault();
+            if (resource == null)
+            {
+                return null;
+            }
+
+            return await GetCalendarWithUriAsync(resource.Uri);;
+        }
+
         private async Task<ICalendar> GetCalendarWithUriAsync(string uri)
         {
             // create body
