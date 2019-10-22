@@ -19,6 +19,7 @@ dotnet_csproj:
   assembly_version: '{version}'
 
 before_build:
+  - ps: Get-Content .\CalDAV.NET\CalDAV.NET.csproj
   - nuget restore
 
 build:
