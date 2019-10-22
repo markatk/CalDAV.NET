@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CalDAV.NET.Interfaces;
 using CommandLine;
 
@@ -8,9 +9,9 @@ namespace CalDAV.NET.Example.Options
         [Option('c', "calendar", Required = true, HelpText = "Calendar to work with")]
         public string Calendar { get; set; }
 
-        public ICalendar GetCalendar()
+        public Task<ICalendar> GetCalendarAsync()
         {
-            return GetClient().GetCalendarAsync(Calendar).Result;
+            return GetClient().GetCalendarAsync(Calendar);
         }
     }
 }
