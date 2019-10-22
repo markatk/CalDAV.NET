@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CalDAV.NET.Interfaces;
 using CalDAV.NET.Internal.Enums;
-using Ical.Net.Serialization;
 
 namespace CalDAV.NET.Internal
 {
     internal class Calendar : ICalendar
     {
-        private static readonly CalendarSerializer _serializer = new CalendarSerializer();
+        private static readonly Regex _hrefRegex = new Regex("<[^>]*(>|$)");
 
         public string Uri { get; set; }
 
@@ -142,7 +142,7 @@ namespace CalDAV.NET.Internal
                         break;
 
                     case "owner":
-                        calendar.Owner = property.Value;
+                        calendar.Owner = property.Value.Contains("href") ? _hrefRegex.Replace(property.Value, "") : property.Value;
 
                         break;
 
@@ -162,6 +162,10 @@ namespace CalDAV.NET.Internal
                         break;
                 }
             }
+
+            calendar.Uid = uri
+                .Replace(calendar.Owner, "")
+                .Replace("/", "");
 
             // fetch events
             var events = await calendar.GetEventsAsync().ConfigureAwait(false);
