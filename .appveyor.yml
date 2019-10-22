@@ -15,11 +15,8 @@ dotnet_csproj:
   patch: true
   file: 'CalDAV.NET\CalDAV.NET.csproj'
   version: '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
 
 before_build:
-  - ps: Get-Content .\CalDAV.NET\CalDAV.NET.csproj
   - nuget restore
 
 build:
@@ -37,3 +34,4 @@ deploy:
     artifact: /.*\.nupkg/
     on:
       branch: master
+      tags: true

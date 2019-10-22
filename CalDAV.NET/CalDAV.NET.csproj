@@ -14,8 +14,6 @@
         <Description>CalDAV .NET client library</Description>
         <LangVersion>7.1</LangVersion>
         <Version>1.0.0.0</Version>
-        <PackageVersion>1.0.0.0</PackageVersion>
-        <AssemblyVersion>1.0.0.0</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>
