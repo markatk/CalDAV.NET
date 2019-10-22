@@ -14,11 +14,12 @@ namespace CalDAV.NET.Example
         public static async Task<int> Main(string[] args)
         {
             return await Parser.Default
-                .ParseArguments<FetchOptions, AddOptions, ListOptions>(args)
+                .ParseArguments<FetchOptions, AddOptions, ListOptions, DeleteOptions>(args)
                 .MapResult(
                     (FetchOptions x) => RunFetch(x),
                     (AddOptions x) => RunAdd(x),
                     (ListOptions x) => RunList(x),
+                    (DeleteOptions x) => RunDelete(x),
                     errs => Task.FromResult(1));
         }
 
@@ -49,7 +50,7 @@ namespace CalDAV.NET.Example
 
             foreach (var calendarEvent in calendar.Events)
             {
-                Console.WriteLine($"- {calendarEvent.Summary} at {calendarEvent.Start}");
+                Console.WriteLine($"- {calendarEvent.Summary} ({calendarEvent.Uid}) at {calendarEvent.Start}");
             }
 
             return 0;
@@ -137,6 +138,50 @@ namespace CalDAV.NET.Example
             foreach (var calendar in calendars)
             {
                 Console.WriteLine($"- {calendar.DisplayName}");
+            }
+
+            return 0;
+        }
+
+        private static async Task<int> RunDelete(DeleteOptions options)
+        {
+            ICalendar calendar;
+
+            try
+            {
+                calendar = await options.GetCalendarAsync();
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine(e.Message);
+
+                return 1;
+            }
+
+            if (calendar == null)
+            {
+                Console.WriteLine($"Calendar {options.Calendar} not found");
+
+                return 1;
+            }
+
+            // delete event with given name
+            var calendarEvent = calendar.Events.FirstOrDefault(x => x.Uid == options.Event);
+            if (calendarEvent == null)
+            {
+                Console.WriteLine($"No event found with uid {options.Event}");
+
+                return 0;
+            }
+
+            calendar.DeleteEvent(calendarEvent);
+
+            var result = await calendar.SaveChangesAsync();
+            if (result == false)
+            {
+                Console.WriteLine("Unable to delete event");
+
+                return 1;
             }
 
             return 0;

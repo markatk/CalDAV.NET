@@ -40,7 +40,7 @@ namespace CalDAV.NET.Internal
             _events = new List<Event>();
         }
 
-        public IEvent CreateEvent(string summary, DateTime start, DateTime end = default(DateTime), string location = null)
+        public IEvent CreateEvent(string summary, DateTime start, DateTime end = default, string location = null)
         {
             var internalEvent = _calendar.Create<Ical.Net.CalendarComponents.CalendarEvent>();
 
