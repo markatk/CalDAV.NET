@@ -25,6 +25,7 @@ namespace CalDAV.NET.Internal
         public string Color { get; private set; }
 
         public IReadOnlyCollection<IEvent> Events => _events.Where(x => x.Status != EventStatus.Deleted).Select(x => x as IEvent).ToList();
+        public bool LocalChanges => _events.Any(x => x.Status != EventStatus.None);
 
         private string ETag { get; set; }
         private string SyncToken { get; set; }
@@ -42,6 +43,11 @@ namespace CalDAV.NET.Internal
 
         public IEvent CreateEvent(string summary, DateTime start, DateTime end = default, string location = null)
         {
+            if (summary == null)
+            {
+                throw new ArgumentNullException(nameof(summary));
+            }
+
             var internalEvent = _calendar.Create<Ical.Net.CalendarComponents.CalendarEvent>();
 
             var calendarEvent = new Event(internalEvent)
@@ -60,6 +66,11 @@ namespace CalDAV.NET.Internal
 
         public void DeleteEvent(IEvent calendarEvent)
         {
+            if (calendarEvent == null)
+            {
+                throw new ArgumentNullException(nameof(calendarEvent));
+            }
+
             var internalEvent = calendarEvent as Event;
             if (internalEvent == null)
             {

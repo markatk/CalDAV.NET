@@ -74,9 +74,14 @@ namespace CalDAV.NET
             return calendars;
         }
 
-        public Task<ICalendar> GetCalendarAsync(string name)
+        public Task<ICalendar> GetCalendarAsync(string uid)
         {
-            return GetCalendarWithUriAsync($"{Username}/{name}");
+            if (string.IsNullOrEmpty(uid))
+            {
+                throw new ArgumentNullException(nameof(uid));
+            }
+
+            return GetCalendarWithUriAsync($"{Username}/{uid}");
         }
 
         public async Task<ICalendar> GetDefaultCalendarAsync()
