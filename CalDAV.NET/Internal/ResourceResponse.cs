@@ -5,9 +5,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using CalDAV.NET.Internal.Extensions;
+using CalDAV.NET.Extensions;
 
-namespace CalDAV.NET.Internal
+namespace CalDAV.NET
 {
     internal class ResourceResponse : Response
     {

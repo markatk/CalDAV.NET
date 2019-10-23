@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CalDAV.NET.Enums;
 using CalDAV.NET.Interfaces;
-using CalDAV.NET.Internal.Enums;
 
-namespace CalDAV.NET.Internal
+namespace CalDAV.NET
 {
     internal class Calendar : ICalendar
     {
@@ -25,8 +25,8 @@ namespace CalDAV.NET.Internal
         public string Method { get; private set; }
         public string Color { get; private set; }
 
-        public IReadOnlyCollection<IEvent> Events => _events.Where(x => x.Status != EventStatus.Deleted).Select(x => x as IEvent).ToList();
-        public bool LocalChanges => _events.Any(x => x.Status != EventStatus.None);
+        public IReadOnlyCollection<IEvent> Events => _events.Where(x => x.Status != EventState.Deleted).Select(x => x as IEvent).ToList();
+        public bool LocalChanges => _events.Any(x => x.Status != EventState.None);
 
         private string ETag { get; set; }
         private string SyncToken { get; set; }
@@ -57,7 +57,7 @@ namespace CalDAV.NET.Internal
                 End = end != default ? end : start.AddHours(1),
                 Summary = summary,
                 Location = location,
-                Status = EventStatus.Created
+                Status = EventState.Created
             };
 
             _events.Add(calendarEvent);
@@ -83,46 +83,45 @@ namespace CalDAV.NET.Internal
                 throw new ArgumentException(nameof(calendarEvent));
             }
 
-            internalEvent.Status = EventStatus.Deleted;
+            internalEvent.Status = EventState.Deleted;
         }
 
-        public async Task<bool> SaveChangesAsync()
+        public async Task<IEnumerable<SaveChangesStatus>> SaveChangesAsync()
         {
             // TODO: Update calendar itself
-            // TODO: Improve error management, maybe save error on event
-            var result = true;
+            var status = new List<SaveChangesStatus>();
 
             foreach (var calendarEvent in _events)
             {
                 switch (calendarEvent.Status)
                 {
-                    case EventStatus.Changed:
+                    case EventState.Changed:
                         if (await UpdateEventAsync(calendarEvent) == false)
                         {
-                            result = false;
+                            status.Add(new SaveChangesStatus(Error.UpdatingEventFailed, calendarEvent));
                         }
 
                         break;
 
-                    case EventStatus.Deleted:
+                    case EventState.Deleted:
                         if (await DeleteEventAsync(calendarEvent) == false)
                         {
-                            result = false;
+                            status.Add(new SaveChangesStatus(Error.DeletingEventFailed, calendarEvent));
                         }
 
                         break;
 
-                    case EventStatus.Created:
+                    case EventState.Created:
                         if (await CreateEventAsync(calendarEvent) == false)
                         {
-                            result = false;
+                            status.Add(new SaveChangesStatus(Error.CreatingEventFailed, calendarEvent));
                         }
 
                         break;
                 }
             }
 
-            return result;
+            return status;
         }
 
         internal static async Task<Calendar> Deserialize(Resource resource, string uri, CalDAVClient client)

@@ -98,6 +98,6 @@ namespace CalDAV.NET.Interfaces
         /// Save all local changes to the server.
         /// </summary>
         /// <returns>True if all changes could be applied, otherwise false.</returns>
-        Task<bool> SaveChangesAsync();
+        Task<IEnumerable<SaveChangesStatus>> SaveChangesAsync();
     }
 }

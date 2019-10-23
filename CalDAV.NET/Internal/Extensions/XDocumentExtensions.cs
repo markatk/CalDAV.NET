@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Xml.Linq;
 
-namespace CalDAV.NET.Internal.Extensions
+namespace CalDAV.NET.Extensions
 {
     internal static class XDocumentExtensions
     {

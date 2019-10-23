@@ -44,7 +44,7 @@ namespace CalDAV.NET.Example.Options
             calendar.DeleteEvent(calendarEvent);
 
             var result = await calendar.SaveChangesAsync();
-            if (result == false)
+            if (result.Any())
             {
                 Console.WriteLine("Unable to delete event");
 

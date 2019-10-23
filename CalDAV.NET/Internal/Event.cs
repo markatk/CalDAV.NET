@@ -1,17 +1,17 @@
 using System;
+using CalDAV.NET.Enums;
 using CalDAV.NET.Interfaces;
-using CalDAV.NET.Internal.Enums;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 
-namespace CalDAV.NET.Internal
+namespace CalDAV.NET
 {
     internal class Event : IEvent
     {
         private static readonly CalendarSerializer _calendarSerializer = new CalendarSerializer();
 
-        public EventStatus Status { get; set; }
+        public EventState Status { get; set; }
         public string Uid => _calendarEvent.Uid;
         public DateTime Created => _calendarEvent.Created.Value;
         public DateTime LastModified => _calendarEvent.LastModified.Value;
@@ -72,7 +72,7 @@ namespace CalDAV.NET.Internal
         public Event(CalendarEvent calendarEvent)
         {
             _calendarEvent = calendarEvent;
-            Status = EventStatus.None;
+            Status = EventState.None;
         }
 
         public override string ToString()
@@ -99,12 +99,12 @@ namespace CalDAV.NET.Internal
         private void Changed()
         {
             // Do not care about changes if flagged for deletion
-            if (Status == EventStatus.Deleted)
+            if (Status == EventState.Deleted)
             {
                 return;
             }
 
-            Status = EventStatus.Changed;
+            Status = EventState.Changed;
         }
 
         private IDateTime SetDateTime(IDateTime target, DateTime value)

@@ -1,6 +1,6 @@
-namespace CalDAV.NET.Internal.Enums
+namespace CalDAV.NET.Enums
 {
-    public enum EventStatus
+    public enum EventState
     {
         None,
         Created,

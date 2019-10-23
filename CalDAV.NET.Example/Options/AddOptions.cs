@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CalDAV.NET.Interfaces;
@@ -50,7 +51,7 @@ namespace CalDAV.NET.Example.Options
             }
 
             var result = await calendar.SaveChangesAsync();
-            if (result == false)
+            if (result.Any())
             {
                 Console.WriteLine("Unable to save new event");
 

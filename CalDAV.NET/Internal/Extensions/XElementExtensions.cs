@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace CalDAV.NET.Internal.Extensions
+namespace CalDAV.NET.Extensions
 {
     internal static class XElementExtensions
     {

@@ -4,9 +4,9 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using CalDAV.NET.Internal.Extensions;
+using CalDAV.NET.Extensions;
 
-namespace CalDAV.NET.Internal
+namespace CalDAV.NET
 {
     internal class Request<T> where T : Response, new()
     {
