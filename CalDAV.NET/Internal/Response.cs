@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CalDAV.NET
+namespace CalDAV.NET.Internal
 {
     internal class Response
     {

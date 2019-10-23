@@ -5,7 +5,7 @@ using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 
-namespace CalDAV.NET
+namespace CalDAV.NET.Internal
 {
     internal class Event : IEvent
     {
@@ -87,10 +87,9 @@ namespace CalDAV.NET
             return $"{content} on {Start} till {End}";
         }
 
-        internal string Serialize()
+        internal string Serialize(Ical.Net.Calendar calendar)
         {
-            // TODO: Use real calendar as base
-            var calendar = new Ical.Net.Calendar();
+            calendar.Events.Clear();
             calendar.Events.Add(_calendarEvent);
 
             return _calendarSerializer.SerializeToString(calendar);

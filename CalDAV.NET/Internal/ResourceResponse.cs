@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using CalDAV.NET.Extensions;
 
-namespace CalDAV.NET
+namespace CalDAV.NET.Internal
 {
     internal class ResourceResponse : Response
     {

@@ -7,7 +7,7 @@ using System.Xml.Linq;
 using CalDAV.NET.Enums;
 using CalDAV.NET.Interfaces;
 
-namespace CalDAV.NET
+namespace CalDAV.NET.Internal
 {
     internal class Calendar : ICalendar
     {
@@ -192,7 +192,7 @@ namespace CalDAV.NET
             }
 
             var result = await _client
-                .Put(GetEventUrl(calendarEvent), internalEvent.Serialize())
+                .Put(GetEventUrl(calendarEvent), internalEvent.Serialize(_calendar))
                 .SendAsync()
                 .ConfigureAwait(false);
 
@@ -240,7 +240,7 @@ namespace CalDAV.NET
         private async Task<bool> CreateEventAsync(Event calendarEvent)
         {
             var result = await _client
-                .Put(GetEventUrl(calendarEvent), calendarEvent.Serialize())
+                .Put(GetEventUrl(calendarEvent), calendarEvent.Serialize(_calendar))
                 .SendAsync()
                 .ConfigureAwait(false);
 

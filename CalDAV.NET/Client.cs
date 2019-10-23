@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CalDAV.NET.Interfaces;
-using CalDAV.NET;
+using CalDAV.NET.Internal;
 
 namespace CalDAV.NET
 {

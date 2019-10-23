@@ -53,7 +53,10 @@ namespace CalDAV.NET.Example.Options
             var result = await calendar.SaveChangesAsync();
             if (result.Any())
             {
-                Console.WriteLine("Unable to save new event");
+                foreach (var error in result)
+                {
+                    Console.WriteLine(error.Message);
+                }
 
                 return 1;
             }

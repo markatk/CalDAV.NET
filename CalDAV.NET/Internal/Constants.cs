@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 
-namespace CalDAV.NET
+namespace CalDAV.NET.Internal
 {
     internal static class Constants
     {
