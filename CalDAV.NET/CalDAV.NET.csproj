@@ -1,23 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard1.3</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>CalDAV.NET</RootNamespace>
         <PackageId>CalDAV.NET</PackageId>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/markatk/CalDAV.NET</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/markatk/CalDAV.NET</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/haledov/CalDAV.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/haledov/CalDAV.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>caldav ical webdav client</PackageTags>
-        <Authors>MarkAtk</Authors>
+        <Authors>hc</Authors>
         <Title>CalDAV.NET</Title>
         <Description>CalDAV .NET client library</Description>
-        <LangVersion>7.1</LangVersion>
         <Version>1.0.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Ical.Net" Version="4.1.11" />
+      <PackageReference Include="Ical.Net" Version="4.2.0" />
     </ItemGroup>
 
 </Project>
