@@ -1,19 +1,12 @@
-# CalDAV.NET
-
-[![Build status](https://ci.appveyor.com/api/projects/status/le4dlvu54wvpufqh?svg=true)](https://ci.appveyor.com/project/markatk/caldav-net)
-[![Nuget](https://img.shields.io/nuget/dt/CalDAV.NET)](https://www.nuget.org/packages/CalDAV.NET/)
+# CalDAV.NET Client
 
 ## Description
 
-Asynchronous CalDAV .NET client library build on .NET Standard. Heavily influenced by [WebDAVClient](https://github.com/skazantsev/WebDavClient) but was not able to use it because of different request methods required by CalDAV.
+Asynchronous CalDAV .NET client library build with .NET 6. Based on  Heavily influenced by [markatk](https://github.com/markatk/CalDAV.NET) work and [WebDAVClient](https://github.com/skazantsev/WebDavClient).
 
 ## Installation
 
-Install CalDAV.NET via [NuGet](https://www.nuget.org/packages/CalDAV.NET/)
-
-```
-Install-Package CalDAV.NET
-```
+...
 
 ## Usage
 
@@ -21,7 +14,7 @@ Install-Package CalDAV.NET
 
 MIT License
 
-Copyright (c) 2019 MarkAtk
+Copyright (c) 2022 HC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
