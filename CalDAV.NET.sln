@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalDAV.NET", "CalDAV.NET\CalDAV.NET.csproj", "{41E05D5A-817D-4516-A5D3-1DF29BC0C2DE}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32519.111
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalDAV.NET", "CalDAV.NET\CalDAV.NET.csproj", "{41E05D5A-817D-4516-A5D3-1DF29BC0C2DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalDAV.NET.Tests", "CalDAV.NET.Tests\CalDAV.NET.Tests.csproj", "{BC1AAA9A-1EFB-4D29-ADD3-268163C8F96A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalDAV.NET.Tests", "CalDAV.NET.Tests\CalDAV.NET.Tests.csproj", "{BC1AAA9A-1EFB-4D29-ADD3-268163C8F96A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalDAV.NET.Example", "CalDAV.NET.Example\CalDAV.NET.Example.csproj", "{2673D695-CA11-483E-A5C1-4D06D0DA5563}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalDAV.NET.Example", "CalDAV.NET.Example\CalDAV.NET.Example.csproj", "{2673D695-CA11-483E-A5C1-4D06D0DA5563}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +27,11 @@ Global
 		{2673D695-CA11-483E-A5C1-4D06D0DA5563}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2673D695-CA11-483E-A5C1-4D06D0DA5563}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2673D695-CA11-483E-A5C1-4D06D0DA5563}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B569F70-0C1F-4A81-BA70-00E5285423E7}
 	EndGlobalSection
 EndGlobal

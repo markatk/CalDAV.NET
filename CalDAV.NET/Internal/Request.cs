@@ -37,7 +37,6 @@ namespace CalDAV.NET.Internal
         public async Task<T> SendAsync(CancellationToken cancellationToken = default)
         {
             var message = await _client.SendAsync(_request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false);
-
             Response = new T();
             await Response.ParseAsync(message).ConfigureAwait(false);
 

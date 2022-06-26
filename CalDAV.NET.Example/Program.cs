@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CalDAV.NET.Example.Options;
 using CommandLine;
 
@@ -8,7 +9,7 @@ namespace CalDAV.NET.Example
     {
         public static async Task<int> Main(string[] args)
         {
-            return await Parser.Default
+            var res = await Parser.Default
                 .ParseArguments<FetchOptions, AddOptions, ListOptions, DeleteOptions>(args)
                 .MapResult(
                     (FetchOptions x) => x.Run(),
@@ -16,6 +17,8 @@ namespace CalDAV.NET.Example
                     (ListOptions x) => x.Run(),
                     (DeleteOptions x) => x.Run(),
                     errs => Task.FromResult(1));
+            Console.ReadLine();
+            return res;
         }
     }
 }

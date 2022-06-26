@@ -172,9 +172,7 @@ namespace CalDAV.NET.Internal
                 }
             }
 
-            calendar.Uid = uri
-                .Replace(calendar.Owner, "")
-                .Replace("/", "");
+            calendar.Uid = uri;
 
             // fetch events
             var events = await calendar.GetEventsAsync().ConfigureAwait(false);

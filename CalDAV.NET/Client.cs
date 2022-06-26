@@ -31,7 +31,8 @@ namespace CalDAV.NET
 
         public async Task<IEnumerable<ICalendar>> GetCalendarsAsync()
         {
-            var userUri = await GetUserUri();
+            var principalUri = await GetUserUri();
+            var userUri = await GetCalendarHome(principalUri);
             if (string.IsNullOrEmpty(userUri))
             {
                 return null;
@@ -90,7 +91,8 @@ namespace CalDAV.NET
 
         public async Task<ICalendar> GetDefaultCalendarAsync()
         {
-            var userUri = await GetUserUri();
+            var principalUri = await GetUserUri();
+            var userUri = await GetCalendarHome(principalUri);
             if (string.IsNullOrEmpty(userUri))
             {
                 return null;
@@ -133,11 +135,13 @@ namespace CalDAV.NET
         private async Task<ICalendar> GetCalendarWithUriAsync(string uri)
         {
             // create body
-            var propfind = new XElement(Constants.DavNs + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs));
-            propfind.Add(new XElement(Constants.DavNs + "allprop"));
 
+            var prop = new XElement(Constants.DavNs + "prop");
+            var root = new XElement(Constants.DavNs + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs),
+                new XAttribute(XNamespace.Xmlns + "cs", Constants.ServerNs)); 
+            root.Add(prop);
             var result = await _client
-                .Propfind(uri, propfind)
+                .Propfind(uri, root)
                 .SendAsync()
                 .ConfigureAwait(false);
 
@@ -145,19 +149,23 @@ namespace CalDAV.NET
             {
                 return null;
             }
-
-            var resource = result.Resources.FirstOrDefault();
-
-            // check if resource really is a calendar
-            var contentType = resource?.Properties.FirstOrDefault(x => x.Key.LocalName == "getcontenttype");
-            if (contentType.HasValue == false || contentType.Value.Value != "text/calendar")
+            
+            foreach (var resource in result.Resources)
             {
-                return null;
+                // check if resource really is a calendar
+                var contentType = resource?.Properties.FirstOrDefault(x => x.Key.LocalName == "getcontenttype");
+                if (contentType.HasValue == false || 
+                    string.IsNullOrEmpty(contentType.Value.Value) || !contentType.Value.Value.Contains("text/calendar"))
+                {
+                    continue;
+                }
+
+                var calendar = await Calendar.Deserialize(resource, uri, _client);
+
+                return calendar;    
             }
 
-            var calendar = await Calendar.Deserialize(resource, uri, _client);
-
-            return calendar;
+            return null;
         }
 
         private async Task<string> GetUserUri()
@@ -192,6 +200,40 @@ namespace CalDAV.NET
                 {
                     return _tagRegex.Replace(keyValue.Value, "");
                 }
+            }
+
+            return null;
+        }
+
+        private async Task<string> GetCalendarHome(string principalUri)
+        {
+            // create body
+            var prop = new XElement(Constants.DavNs + "prop");
+            prop.Add(new XElement(Constants.CalNs + "calendar-home-set"));
+
+            var root = new XElement(Constants.DavNs + "propfind", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs),
+                new XAttribute(XNamespace.Xmlns + "c", Constants.CalNs)
+            );
+            root.Add(prop);
+            var result = await _client
+                .Propfind(principalUri, root)
+                .WithHeader("Depth", "0")
+                .SendAsync()
+                .ConfigureAwait(false);
+            if(result.IsSuccessful == false)
+            {
+                return null;
+            }
+            
+            var resource = result.Resources.FirstOrDefault();
+
+            foreach (var keyValue in resource.Properties)
+            {
+                if (keyValue.Key.LocalName == "calendar-home-set")
+                {
+                    return _tagRegex.Replace(keyValue.Value, "");
+                }
+                
             }
 
             return null;
