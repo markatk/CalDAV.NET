@@ -16,6 +16,69 @@ Install-Package CalDAV.NET
 ```
 
 ## Usage
+```csharp
+// Connect to server.
+var serverUrl = new Uri("https://example.com/calendars");
+var client = new Client(serverUrl, "Benutzername", "Passwort");
+
+// Get calendar from server.
+var calendar = await client.GetCalendarAsync("59e336cc-a919-46b6-a142-7ed1045dd135");
+
+// Update events.
+foreach (var @event in calendar.Events)
+{
+    if (@event.Summary != "TestSummary")
+    {
+        continue;
+    }
+
+    @event.Summary = "Test";
+
+    // Save changes to server.
+    var result = await calendar.SaveChangesAsync();
+
+    if (!result)
+    {
+        Console.WriteLine("Unable to save changed event");
+        return;
+    }
+}
+
+// Create a new event.
+var calendarEvent = calendar.CreateEvent("Mein Termin", DateTime.Now, DateTime.Now.AddHours(1), "Test");
+
+if (calendarEvent == null)
+{
+    Console.WriteLine("Unable to create event");
+    return;
+}
+
+// Save changes to server.
+var result2 = await calendar.SaveChangesAsync();
+
+if (!result2)
+{
+    Console.WriteLine("Unable to save created event");
+    return;
+}
+
+// Delete an event.
+var firstEvent = calendar.Events.FirstOrDefault();
+
+if (firstEvent is not null)
+{
+    calendar.DeleteEvent(firstEvent);
+
+    // Save changes to server.
+    var result3 = await calendar.SaveChangesAsync();
+
+    if (!result3)
+    {
+        Console.WriteLine("Unable to save created event");
+        return;
+    }
+}
+```
 
 ## License
 
