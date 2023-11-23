@@ -15,6 +15,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      name: Checkout
+      with:
+        fetch-depth: 0
+    - name: GitTools
+      uses: GitTools/actions@v0.10.2
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0
+      with:
+        versionSpec: '6.x'
+        includePrerelease: true
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0
     - name: Setup .NET ${{ matrix.dotnet-version }}
       uses: actions/setup-dotnet@v3
       with:
