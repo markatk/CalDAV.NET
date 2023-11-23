@@ -18,8 +18,6 @@ jobs:
       name: Checkout
       with:
         fetch-depth: 0
-    - name: GitTools
-      uses: GitTools/actions@v0.10.2
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0
       with:
