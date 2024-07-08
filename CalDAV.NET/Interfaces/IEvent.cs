@@ -49,6 +49,11 @@ namespace CalDAV.NET.Interfaces
         /// </summary>
         string Summary { get; set; }
 
+        /// <summary>
+        /// Get or set the description of the event.
+        /// </summary>
+        string Description { get; set; }
+
         // TODO: Add alarm
         // TODO: Add missing properties like transparent, class, categories etc.
     }

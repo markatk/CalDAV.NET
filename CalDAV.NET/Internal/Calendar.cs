@@ -9,7 +9,7 @@ using CalDAV.NET.Interfaces;
 
 namespace CalDAV.NET.Internal
 {
-    internal class Calendar : ICalendar
+    public class Calendar : ICalendar
     {
         private static readonly Regex _hrefRegex = new Regex("<[^>]*(>|$)");
 
@@ -25,7 +25,9 @@ namespace CalDAV.NET.Internal
         public string Method { get; private set; }
         public string Color { get; private set; }
 
-        public IReadOnlyCollection<IEvent> Events => _events.Where(x => x.Status != EventState.Deleted).Select(x => x as IEvent).ToList();
+        public IReadOnlyCollection<IEvent> Events =>
+            _events.Where(x => x.Status != EventState.Deleted).Select(x => x as IEvent).ToList();
+
         public bool LocalChanges => _events.Any(x => x.Status != EventState.None);
 
         private string ETag { get; set; }
@@ -42,7 +44,8 @@ namespace CalDAV.NET.Internal
             _events = new List<Event>();
         }
 
-        public IEvent CreateEvent(string summary, DateTime start, DateTime end = default, string location = null)
+        public IEvent CreateEvent(string summary, DateTime start, DateTime end = default, string location = null,
+            string description = "")
         {
             if (summary == null)
             {
@@ -50,15 +53,16 @@ namespace CalDAV.NET.Internal
             }
 
             var internalEvent = _calendar.Create<Ical.Net.CalendarComponents.CalendarEvent>();
-
             var calendarEvent = new Event(internalEvent)
             {
                 Start = start,
                 End = end != default ? end : start.AddHours(1),
                 Summary = summary,
                 Location = location,
-                Status = EventState.Created
+                Status = EventState.Created,
+                Description = description,
             };
+            internalEvent.IsAllDay = false;
 
             _events.Add(calendarEvent);
 
@@ -72,8 +76,7 @@ namespace CalDAV.NET.Internal
                 throw new ArgumentNullException(nameof(calendarEvent));
             }
 
-            var internalEvent = calendarEvent as Event;
-            if (internalEvent == null)
+            if (!(calendarEvent is Event internalEvent))
             {
                 throw new ArgumentException(nameof(calendarEvent));
             }
@@ -141,7 +144,9 @@ namespace CalDAV.NET.Internal
                         break;
 
                     case "owner":
-                        calendar.Owner = property.Value.Contains("href") ? _hrefRegex.Replace(property.Value, "") : property.Value;
+                        calendar.Owner = property.Value.Contains("href")
+                            ? _hrefRegex.Replace(property.Value, "")
+                            : property.Value;
 
                         break;
 
@@ -212,7 +217,9 @@ namespace CalDAV.NET.Internal
         private async Task<IEnumerable<Event>> GetEventsAsync()
         {
             // create body
-            var query = new XElement(Constants.CalNs + "calendar-query", new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs), new XAttribute(XNamespace.Xmlns + "c", Constants.CalNs));
+            var query = new XElement(Constants.CalNs + "calendar-query",
+                new XAttribute(XNamespace.Xmlns + "d", Constants.DavNs),
+                new XAttribute(XNamespace.Xmlns + "c", Constants.CalNs));
 
             var prop = new XElement(Constants.DavNs + "prop");
             prop.Add(new XElement(Constants.DavNs + "getetag"));

@@ -80,9 +80,11 @@ namespace CalDAV.NET.Interfaces
         /// <param name="start">Start date and time of the event</param>
         /// <param name="end">End date and time of the event</param>
         /// <param name="location">Location of the event</param>
+        /// <param name="description">Description of the event</param>
         /// <returns>New created event</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="summary" /> is null</exception>
-        IEvent CreateEvent(string summary, DateTime start, DateTime end = default(DateTime), string location = null);
+        IEvent CreateEvent(string summary, DateTime start, DateTime end = default(DateTime), string location = null,
+            string description = "");
 
         /// <summary>
         /// Delete a given event from the calendar.

@@ -150,10 +150,10 @@ namespace CalDAV.NET
 
             // check if resource really is a calendar
             var contentType = resource?.Properties.FirstOrDefault(x => x.Key.LocalName == "getcontenttype");
-            if (contentType.HasValue == false || contentType.Value.Value != "text/calendar")
-            {
-                return null;
-            }
+            // if (contentType.HasValue == false || contentType.Value.Value != "text/calendar")
+            // {
+            //     return null;
+            // }
 
             var calendar = await Calendar.Deserialize(resource, uri, _client);
 

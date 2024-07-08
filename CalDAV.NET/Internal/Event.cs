@@ -39,6 +39,12 @@ namespace CalDAV.NET.Internal
             }
         }
 
+        public string Description
+        {
+            get => _calendarEvent.Description;
+            set => _calendarEvent.Description = value;
+        }
+
         public DateTime Stamp
         {
             get => _calendarEvent.DtStamp.Value;
